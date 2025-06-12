@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Uyarı</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  body {
+    margin:0; padding:0; background:#000; color:#0f0; 
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+  }
+  #terminal {
+    white-space: pre-wrap;
+    padding: 20px;
+    font-size: 1.2em;
+    line-height: 1.4em;
+    max-width: 700px;
+    margin: 50px auto;
+    min-height: 400px;
+  }
+  .red-bg {
+    background: #8B0000;
+    color: #ff4444;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .glitch {
+    position: relative;
+    color: #ff4444;
+    animation: glitch 1s infinite;
+  }
+  @keyframes glitch {
+    0% {text-shadow: 2px 0 #ff0000, -2px 0 #00ffea;}
+    20% {text-shadow: -2px 0 #ff0000, 2px 0 #00ffea;}
+    40% {text-shadow: 2px 0 #ff0000, -2px 0 #00ffea;}
+    60% {text-shadow: -2px 0 #ff0000, 2px 0 #00ffea;}
+    80% {text-shadow: 2px 0 #ff0000, -2px 0 #00ffea;}
+    100% {text-shadow: -2px 0 #ff0000, 2px 0 #00ffea;}
+  }
+  #final-warning {
+    display: none;
+    text-align: center;
+    font-size: 1.8em;
+    margin-top: 100px;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+<div id="terminal"></div>
+<div id="final-warning" class="red-bg glitch">
+⚠️ Tüm sisteminiz 90 saniye içinde devre dışı bırakılacak. GÜVENLİK UYARISI.
+</div>
+
+<script>
+  const lines = [
+    "less\n",
+    "Kopyala\n",
+    "Düzenle\n",
+    "[!] Uygunsuz erişim tespit edildi...\n",
+    "[+] IP adresi: 192.168.1.54 loglandı\n",
+    "[+] Donanım bilgileri toplanıyor...\n",
+    "[+] RAM erişimi sağlandı\n",
+    "[+] Disk C:\\ analiz ediliyor\n",
+    "[!] Potansiyel zararlı yazılım yüklendi\n",
+    "[!] Sistem karantina moduna alınıyor...\n",
+    "[!] İnternet bağlantısı devre dışı bırakılıyor\n",
+    "[+] Kullanıcı kimliği çözümlendi\n",
+    "[+] Kamera erişimi: AKTİF\n",
+    "[!] Uyarı: Şüpheli aktivite sebebiyle yetkililere bildirildi\n"
+  ];
+  const finalLine = "⚠️ Tüm sisteminiz 90 saniye içinde devre dışı bırakılacak. GÜVENLİK UYARISI.\n";
+
+  const terminal = document.getElementById('terminal');
+  const finalWarning = document.getElementById('final-warning');
+
+  let lineIndex = 0;
+  let charIndex = 0;
+
+  function typeLine() {
+    if (lineIndex < lines.length) {
+      if (charIndex < lines[lineIndex].length) {
+        terminal.textContent += lines[lineIndex][charIndex];
+        charIndex++;
+        setTimeout(typeLine, 50);
+      } else {
+        terminal.textContent += "\n";
+        lineIndex++;
+        charIndex = 0;
+        setTimeout(typeLine, 300);
+      }
+    } else {
+      // Son satırı yavaşça yazalım
+      typeFinalLine(0);
+    }
+  }
+
+  function typeFinalLine(i) {
+    if (i < finalLine.length) {
+      terminal.textContent += finalLine[i];
+      i++;
+      setTimeout(() => typeFinalLine(i), 70);
+    } else {
+      // Final warning göster
+      terminal.style.display = 'none';
+      finalWarning.style.display = 'block';
+      startScreenEffects();
+      setTimeout(() => {
+        document.body.style.transition = 'background-color 3s ease';
+        document.body.style.backgroundColor = '#8B0000';
+        terminal.style.color = '#ff4444';
+      }, 1000);
+      setTimeout(() => {
+        showFinalText();
+      }, 10000);
+    }
+  }
+
+  function startScreenEffects() {
+    // Ekran titreme
+    let count = 0;
+    const interval = setInterval(() => {
+      if (count > 30) {
+        clearInterval(interval);
+        return;
+      }
+      const x = (Math.random() - 0.5) * 10;
+      const y = (Math.random() - 0.5) * 10;
+      document.body.style.transform = `translate(${x}px, ${y}px)`;
+      count++;
+    }, 50);
+
+    // Mouse gizle
+    document.body.style.cursor = 'none';
+  }
+
+  function showFinalText() {
+    finalWarning.textContent = `💀 "Tüm kişisel verileriniz ele geçirildi."\nBu sadece bir başlangıç.\nGeri dönüş yok...`;
+
+    // Kırmızı arka plan devam etsin
+    document.body.style.backgroundColor = '#8B0000';
+
+    // Bozuk font efekti için basit animasyon (CSS glitch var)
+  }
+
+  typeLine();
+
+  // Otomatik dosya indirme
+  setTimeout(() => {
+    const content = `Artık çok geç.\nGördüğünü kimseye anlatma.\nSistem gözlem altında.\n🔐 Admin Panel\n/admin adresinden erişilir\nGiriş için şifre gerekir (örneğin: letmein)\nBurada ziyaretçi IP'leri ve giriş tarihleri listelenir\n`;
+    const blob = new Blob([content], {type: 'text/plain'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "UYARI.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, 90000);
+</script>
+</body>
+</html>
